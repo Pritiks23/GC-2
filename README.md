@@ -100,7 +100,7 @@ This indicates that inference latency in agent systems cannot be fully understoo
 
 
 
-# Agent Trajectory Latency Benchmark (OpenAI vs General Compute)
+# Agent Trajectory Latency Benchmark : Cross-provider inference
 <img width="2140" height="1502" alt="image" src="https://github.com/user-attachments/assets/b032432a-cd46-4cce-92e5-004a66396d38" />
 
 ## Overview
@@ -123,6 +123,7 @@ This benchmark evaluates how inference systems behave under that regime by compa
 under identical structured agent workloads.
 
 ---
+*** This benchmark compares latency behavior across two different inference providers under identical agent trajectory workloads; results are observational and not intended as causal or architectural comparisons. ***
 
 ## Experimental Design
 
