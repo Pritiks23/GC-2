@@ -40,7 +40,7 @@ def run_agent(provider):
             {"role": "user", "content": prompt}
         ]
 
-        out = provider(messages, MAX_OUTPUT_TOKENS)
+        out = provider.call(messages, MAX_OUTPUT_TOKENS)
 
         results.append(out)
 
