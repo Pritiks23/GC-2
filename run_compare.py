@@ -7,7 +7,7 @@ from metrics.analysis import extract_metrics
 from metrics.recorder import save_results
 
 from providers.openai_provider import OpenAIProvider
-from providers.general_compute_provider import GeneralComputeProvider
+from providers.general_compute import GeneralComputeProvider
 
 
 def run_experiment(provider, name):
