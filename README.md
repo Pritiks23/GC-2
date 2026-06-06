@@ -1,30 +1,4 @@
-TrajectoryBench: Measuring Latency Amplification in Multi-Step LLM Workflows
-What Makes This Different
+TrajectoryBench
+Measuring Latency Amplification in Agent-Style Workloads
 
-Most benchmarks measure:
-
-Single Prompt
-     ↓
-Single Response
-
-TrajectoryBench measures:
-
-Prompt
-   ↓
-Response
-   ↓
-Refinement
-   ↓
-Response
-   ↓
-Refinement
-   ↓
-Response
-
-and records:
-
-per-step latency
-cumulative latency
-prompt token growth
-completion token growth
-latency amplification factor
+Traditional LLM benchmarks emphasize throughput and long-form generation. Agent-style workloads invert those assumptions, repeatedly processing large contexts to produce short structured outputs. As context accumulates across a trajectory, workflow latency can grow substantially even when individual generations remain small. This benchmark explores that behavior by measuring latency across increasingly context-heavy sequential workflows.
