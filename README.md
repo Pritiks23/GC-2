@@ -97,10 +97,10 @@ The most accurate characterization of the observed behavior is:
 
 This indicates that inference latency in agent systems cannot be fully understood through single-request benchmarks. It is fundamentally a trajectory-level property shaped by evolving context and sequential computation structure.
 ```
-#Project #2 comparing General Compute versas OpenAI
+
 <img width="2140" height="1502" alt="image" src="https://github.com/user-attachments/assets/b032432a-cd46-4cce-92e5-004a66396d38" />
 
-# Agent Trajectory Latency Benchmark (OpenAI vs General Compute)
+# Project #2 comparing General Compute versas OpenAI: Agent Trajectory Latency Benchmark (OpenAI vs General Compute)
 
 ## Overview
 
