@@ -195,7 +195,7 @@ OpenAI shows:
 
 - Strong overall stability in short structured generation
 - Latency is relatively decoupled from context growth at this scale
-- Execution behaves closer to a **fixed-cost inference system with stochastic variance**
+- OpenAI appears closer to a relatively flat latency regime under this workload scale, with higher stochastic variance relative to observed context growth.
 
 This results in:
 
@@ -209,7 +209,7 @@ This results in:
 
 - Step latency range: ~0.66s → 1.65s
 - Clear monotonic upward trend across trajectory
-- Strong correlation between prompt token growth and latency increase
+- Visually stronger coupling between prompt token growth and latency increase
 - Consistent step-wise scaling behavior
 
 ### Total Trajectory Latency
@@ -264,7 +264,7 @@ This indicates:
 
 The most important observation is not absolute speed, but **scaling structure across agent trajectories**:
 
-> General Compute demonstrates stronger and more measurable latency scaling with context growth across sequential agent steps.
+> A more structured latency–context relationship is observed in the General Compute run under this workload configuration.
 
 This is critical for agent workloads where:
 - context grows continuously
