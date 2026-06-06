@@ -163,6 +163,20 @@ And derived:
 
 # Results
 
+
+## Scope Clarification:
+
+
+This benchmark does not isolate model-level performance. Instead, it evaluates end-to-end inference latency as observed through two different API providers under identical agent-style workloads.
+
+As a result, observed differences may reflect:
+
+serving infrastructure differences
+batching and request scheduling policies
+context handling and KV-cache reuse behavior
+network and routing variance
+
+This work focuses on trajectory-level latency dynamics rather than causal attribution.
 ## 1. OpenAI (`gpt-4o-mini`)
 
 ### Latency Profile
