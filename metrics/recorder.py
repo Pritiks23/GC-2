@@ -1,11 +1,8 @@
-import json
 import os
+import json
 
-RESULTS_PATH = "results/results.json"
-
-
-def save_run(data):
+def save_results(data):
     os.makedirs("results", exist_ok=True)
 
-    with open(RESULTS_PATH, "w") as f:
+    with open("results/results.json", "w") as f:
         json.dump(data, f, indent=2)
