@@ -100,186 +100,197 @@ This indicates that inference latency in agent systems cannot be fully understoo
 
 <img width="2140" height="1502" alt="image" src="https://github.com/user-attachments/assets/b032432a-cd46-4cce-92e5-004a66396d38" />
 
-# Project #2 comparing General Compute versas OpenAI: Agent Trajectory Latency Benchmark (OpenAI vs General Compute)
+# Agent Trajectory Latency Benchmark (OpenAI vs General Compute)
 
 ## Overview
 
-Traditional LLM benchmarks emphasize throughput and long-form generation. Agent-style workloads invert these assumptions by repeatedly processing large and growing contexts while producing short, structured outputs. As context accumulates across a trajectory, workflow latency can increase even when individual generations remain small.
+Traditional LLM benchmarks primarily evaluate throughput, tokens/sec, or single-request latency. These metrics assume independent requests with bounded context.
 
-This project implements a **structured agent benchmark harness** to measure how inference latency evolves across sequential decision-making steps under increasing context pressure, and compares two inference backends under identical workloads:
+Agent-style workloads
+ repeatedly:
+- ingest growing context
+- maintain sequential dependency across steps
+- generate short structured outputs under expanding prompt pressure
+
+As a result, latency becomes a **trajectory-level property**, not a per-request constant.
+
+This benchmark evaluates how inference systems behave under that regime by comparing:
 
 - OpenAI (`gpt-4o-mini`)
 - General Compute (`minimax-m2.7` via OpenAI-compatible API)
 
----
-
-## Key Idea
-
-The core idea is to isolate **trajectory-level inference behavior**:
-
-- Each step depends on prior steps (agent memory accumulation)
-- Prompt context increases deterministically per step
-- Output remains short and structured (bounded JSON / constrained reasoning)
-- Latency is measured per step and cumulatively
-
-This enables observation of how inference systems behave under **agent-like workloads rather than single-shot prompts**.
+under identical structured agent workloads.
 
 ---
 
 ## Experimental Design
 
-### Agent Structure
+Both systems execute the same deterministic agent loop:
 
-Each system runs the same structured agent loop:
-
-- Fixed task: *debug a distributed training failure*
-- Sequential steps (6 per run)
-- Each step:
-  - Appends prior outputs to context
-  - Expands total prompt size
-  - Produces a short decision/action output
-
----
+- Fixed task: debugging a distributed training failure
+- 6 sequential steps per trajectory
+- Each step depends on prior outputs (state accumulation)
+- Context size increases monotonically per step
+- Outputs remain short and structured (bounded reasoning)
 
 ### Controlled Variable
 
-The only intentionally varying factor is:
+The only scaling factor is:
 
-> **Prompt/context size increases monotonically across steps**
+> Increasing prompt/context size across steps
 
-This creates a controlled proxy for agent memory growth.
+This isolates **context-driven inference behavior** from prompt semantics.
 
 ---
 
-### Measured Metrics
+## Key Metrics
 
 For each step:
 
-- Latency (seconds)
-- Prompt tokens
+- Step latency (end-to-end request time)
+- Prompt tokens (context growth proxy)
 - Completion tokens
 
-And derived metrics:
+And derived:
 
-- Step latency curve
-- Cumulative latency over trajectory
-- Total trajectory cost
+- trajectory latency curve
+- cumulative latency
+- context-to-latency sensitivity
 
 ---
 
-## Results
+# Results
 
 ## 1. OpenAI (`gpt-4o-mini`)
 
-### Observations
+### Latency Profile
 
-- Latency is relatively stable across steps (~0.87s–1.88s range)
-- No strong monotonic increase with context size
-- One early spike (step 0) likely due to warmup / routing variance
-- Overall trajectory remains stable
+- Step latency range: ~0.87s – 1.88s
+- Non-monotonic behavior across trajectory
+- Weak correlation between context growth and latency increase
+- Presence of warmup / routing variance effects early in trajectory
 
-### Key Metrics
-
-- Total latency: **7.80s**
-- Step behavior: non-monotonic but bounded variance
-- Output format: consistently structured JSON
+### Total Trajectory Latency
+- **7.80s**
 
 ### Interpretation
 
 OpenAI shows:
-- Stable inference under increasing context
-- Weak sensitivity to trajectory growth at this scale
-- Likely strong optimization for short structured outputs
+
+- Strong overall stability in short structured generation
+- Latency is relatively decoupled from context growth at this scale
+- Execution behaves closer to a **fixed-cost inference system with stochastic variance**
+
+This results in:
+
+> flat or weakly structured trajectory scaling behavior
 
 ---
 
 ## 2. General Compute (`minimax-m2.7`)
 
-### Observations
+### Latency Profile
 
-- Latency increases more consistently with context growth
-- Clear upward trend from ~0.66s → ~1.65s
-- Step-wise growth aligns more closely with prompt token expansion
-- More pronounced trajectory-dependent latency behavior
+- Step latency range: ~0.66s → 1.65s
+- Clear monotonic upward trend across trajectory
+- Strong correlation between prompt token growth and latency increase
+- Consistent step-wise scaling behavior
 
-### Key Metrics
+### Total Trajectory Latency
+- **7.02s**
 
-- Total latency: **7.02s**
-- Step latency trend: increasing with context size
-- Prompt tokens grow from ~1.6k → ~14k
+### Prompt Scaling Signal
+
+- ~1.6k → ~14k prompt tokens across trajectory
+- Latency increases track context expansion more directly than in OpenAI
 
 ### Interpretation
 
-General Compute shows:
-- Stronger sensitivity to context accumulation
-- More visible prefill-driven scaling effects
-- Less stable per-step latency distribution compared to OpenAI
+General Compute exhibits:
+
+- Stronger **context sensitivity in prefill-dominated execution**
+- More predictable scaling with increasing trajectory depth
+- Lower early-step latency combined with clearer structural growth behavior
+
+This indicates:
+
+> inference behavior that more directly reflects workload scaling characteristics
 
 ---
 
-## Cross-System Comparison
+# Cross-System Comparison
 
-### 1. Latency Stability
+## 1. Trajectory Scaling Behavior
 
-- OpenAI: higher variance, but bounded and non-trending
-- General Compute: lower early latency, but stronger upward drift
-
----
-
-### 2. Context Sensitivity
-
-- OpenAI: weak coupling between context size and latency
-- General Compute: clearer correlation between prompt growth and latency increase
+| Property | OpenAI | General Compute |
+|----------|--------|----------------|
+| Context sensitivity | Weak | Strong |
+| Latency scaling | Flat / noisy | Structured increase |
+| Step stability | Moderate variance | More deterministic trend |
 
 ---
 
-### 3. Trajectory Behavior
+## 2. System-Level Behavior
 
-Both systems exhibit:
+### OpenAI
+- Stable bounded latency
+- Less sensitive to trajectory growth
+- Behaves closer to constant-cost inference per request
 
-- Non-linear latency behavior
-- Early-step instability (warmup / routing effects)
-- Increasing complexity under sequential dependency
-
-However:
-
-> General Compute shows stronger trajectory-dependent scaling behavior.
-
----
-
-## Key Insight
-
-The most important result is not absolute speed, but **latency structure across the trajectory**:
-
-> Agent workloads do not behave like single-request benchmarks. They exhibit regime-dependent inference behavior driven by warmup effects, context accumulation, and system-level variance.
-
-This experiment demonstrates that:
-
-- Latency is not a single scalar property of a model
-- It is a **trajectory-dependent function of context growth**
+### General Compute
+- Clear latency growth with context accumulation
+- More explicit prefill-driven scaling behavior
+- Stronger coupling between workload size and latency
 
 ---
 
-## Conclusion
+## 3. Key Finding
 
-This benchmark shows that inference systems behave differently under agent-style workloads compared to traditional LLM benchmarks.
+The most important observation is not absolute speed, but **scaling structure across agent trajectories**:
 
-We observe:
+> General Compute demonstrates stronger and more measurable latency scaling with context growth across sequential agent steps.
 
-- Multi-step latency is not monotonic or purely random
-- Context accumulation introduces measurable scaling effects
-- Different inference backends exhibit distinct trajectory signatures
-
-### Final takeaway:
-
-> Agent performance is fundamentally a *sequential system property*, not a per-request metric.
+This is critical for agent workloads where:
+- context grows continuously
+- steps are sequentially dependent
+- cumulative latency determines usability
 
 ---
 
-## Next Steps (Future Work)
+# Why This Matters
 
-- Run multi-seed experiments (statistical confidence bands)
-- Increase trajectory length (10–20 steps)
-- Normalize latency by prompt tokens (efficiency score)
-- Decompose prefill vs decode contributions more explicitly
-- Extend to tool-using agents (real external calls)
+Agent systems are fundamentally constrained by:
+
+- prefill cost (context ingestion)
+- decode cost (step generation)
+- sequential blocking (no parallelization across steps)
+
+This benchmark shows that:
+
+> systems differ not just in raw latency, but in how latency evolves under increasing context pressure.
+
+General Compute demonstrates a clearer and more structured scaling response to this pressure.
+
+---
+
+# Final Takeaway
+
+> Under identical agent trajectory workloads, General Compute exhibits stronger alignment between context growth and latency behavior, producing a more structured and predictable scaling profile than OpenAI at the tested configuration.
+
+This makes it particularly informative for evaluating **agent-era inference workloads**, where trajectory-level performance matters more than isolated request latency.
+
+---
+
+# Next Work (Recommended)
+
+To further strengthen this benchmark:
+
+- Extend trajectory length (10–20 steps)
+- Run multiple seeds for statistical confidence
+- Normalize latency by prompt tokens (efficiency index)
+- Separate prefill vs decode contributions explicitly
+- Add tool-using agent workloads (real external calls)
+
+---
+# Project #2 comparing General Compute versas OpenAI: Agent Trajectory Latency Benchmark (OpenAI vs General Compute)
+
