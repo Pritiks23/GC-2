@@ -2,11 +2,13 @@ import os
 
 MODEL = "gpt-4o-mini"
 
-# Keep this SMALL for budget safety
-STEPS = 5
+STEPS = 6
 
-CONTEXT_SIZES = [500, 1000, 2000, 4000]
+# THIS is your controlled scaling lever
+BASE_CONTEXT = 800  # tokens (simulated size unit)
 
-OUTPUT_MAX_TOKENS = 80
+CONTEXT_GROWTH = 1200  # per step increase
+
+MAX_OUTPUT_TOKENS = 80
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
