@@ -224,7 +224,7 @@ This results in:
 
 General Compute exhibits:
 
-- Stronger **context sensitivity in prefill-dominated execution**
+- Notably, General Compute achieved lower total trajectory latency (7.02s versus 7.80s), suggesting that increasing context did not prevent competitive end-to-end performance.
 - More predictable scaling with increasing trajectory depth
 - Lower early-step latency combined with clearer structural growth behavior
 
@@ -291,7 +291,8 @@ General Compute demonstrates a clearer and more structured scaling response to t
 
 # Final Takeaway
 
-> Under identical agent trajectory workloads, General Compute exhibits stronger alignment between context growth and latency behavior, producing a more structured and predictable scaling profile than OpenAI at the tested configuration.
+> Notably, General Compute  achieved lower total trajectory latency (7.02s versus 7.80s), suggesting that increasing context did not prevent competitive end-to-end performance.
+> As prompt size expanded from approximately 1.6K to 14K tokens, latency increased in a consistent step-wise manner, indicating a stronger observed relationship between workload growth and inference behavior.
 
 This makes it particularly informative for evaluating **agent-era inference workloads**, where trajectory-level performance matters more than isolated request latency.
 
