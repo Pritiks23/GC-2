@@ -1,0 +1,67 @@
+{
+  "raw": [
+    {
+      "text": "{\n  \"action\": \"decide\",\n  \"next\": \"Initiate debugging process\"\n}",
+      "latency": 1.8002333641052246,
+      "prompt_tokens": 1674,
+      "completion_tokens": 20
+    },
+    {
+      "text": "{\n  \"action\": \"analyze\",\n  \"next\": \"Check logs for error messages related to the training process.\"\n}",
+      "latency": 1.4572410583496094,
+      "prompt_tokens": 4094,
+      "completion_tokens": 26
+    },
+    {
+      "text": "{\n  \"action\": \"retrieve\",\n  \"next\": \"Gather system logs for the last training run.\"\n}",
+      "latency": 1.094559907913208,
+      "prompt_tokens": 6520,
+      "completion_tokens": 23
+    },
+    {
+      "text": "{\n  \"action\": \"decide\",\n  \"next\": \"Analyze system logs for potential issues.\"\n}",
+      "latency": 1.7160978317260742,
+      "prompt_tokens": 8943,
+      "completion_tokens": 22
+    },
+    {
+      "text": "{\n  \"action\": \"analyze\",\n  \"next\": \"Examine gathered logs for anomalies or error codes.\"\n}",
+      "latency": 1.2558619976043701,
+      "prompt_tokens": 11365,
+      "completion_tokens": 25
+    },
+    {
+      "text": "{\n  \"action\": \"retrieve\",\n  \"next\": \"Fetch detailed error logs from the last distributed training run.\"\n}",
+      "latency": 1.1792058944702148,
+      "prompt_tokens": 13790,
+      "completion_tokens": 25
+    }
+  ],
+  "metrics": {
+    "step_latency": [
+      1.8002333641052246,
+      1.4572410583496094,
+      1.094559907913208,
+      1.7160978317260742,
+      1.2558619976043701,
+      1.1792058944702148
+    ],
+    "cumulative_latency": [
+      1.8002333641052246,
+      3.257474422454834,
+      4.352034330368042,
+      6.068132162094116,
+      7.323994159698486,
+      8.503200054168701
+    ],
+    "prompt_tokens": [
+      1674,
+      4094,
+      6520,
+      8943,
+      11365,
+      13790
+    ],
+    "total_latency": 8.503200054168701
+  }
+}

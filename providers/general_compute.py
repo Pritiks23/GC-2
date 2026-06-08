@@ -1,20 +1,28 @@
 import time
+import os
 from openai import OpenAI
-from config import GENERAL_COMPUTE_BASE_URL, GENERAL_COMPUTE_MODEL, GENERAL_COMPUTE_API_KEY
 from providers.base import LLMProvider
-
-client = OpenAI(
-    base_url=GENERAL_COMPUTE_BASE_URL,
-    api_key=GENERAL_COMPUTE_API_KEY
-)
+from config import GENERAL_COMPUTE_MODEL
 
 
 class GeneralComputeProvider(LLMProvider):
 
+    def __init__(self):
+        api_key = os.getenv("GENERAL_COMPUTE_API_KEY")
+
+        if not api_key:
+            raise ValueError("GENERAL_COMPUTE_API_KEY not set in environment")
+
+        # IMPORTANT: use provider base_url (NOT OpenAI default)
+        self.client = OpenAI(
+            base_url="https://api.generalcompute.com",
+            api_key=api_key,
+        )
+
     def call(self, messages, max_tokens):
         start = time.time()
 
-        resp = client.chat.completions.create(
+        resp = self.client.chat.completions.create(
             model=GENERAL_COMPUTE_MODEL,
             messages=messages,
             max_tokens=max_tokens

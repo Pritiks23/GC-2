@@ -1,0 +1,67 @@
+{
+  "raw": [
+    {
+      "text": "{\n  \"action\": \"retrieve\",\n  \"next\": \"gather training logs and error messages\"\n}",
+      "latency": 1.626065969467163,
+      "prompt_tokens": 1674,
+      "completion_tokens": 22
+    },
+    {
+      "text": "{\n  \"action\": \"decide\",\n  \"next\": \"start analyzing error messages from training logs\"\n}",
+      "latency": 0.9862096309661865,
+      "prompt_tokens": 4096,
+      "completion_tokens": 23
+    },
+    {
+      "text": "{\n  \"action\": \"analyze\",\n  \"next\": \"examine training logs for consistency issues\"\n}",
+      "latency": 1.0624301433563232,
+      "prompt_tokens": 6519,
+      "completion_tokens": 23
+    },
+    {
+      "text": "{\n  \"action\": \"retrieve\",\n  \"next\": \"collect relevant logs and metrics for distributed training\"\n}",
+      "latency": 0.8440477848052979,
+      "prompt_tokens": 8942,
+      "completion_tokens": 23
+    },
+    {
+      "text": "{\n  \"action\": \"decide\",\n  \"next\": \"check error messages from collected logs\"\n}",
+      "latency": 0.9612150192260742,
+      "prompt_tokens": 11365,
+      "completion_tokens": 22
+    },
+    {
+      "text": "{\n  \"action\": \"retrieve\",\n  \"next\": \"gather detailed logs related to the distributed training failure\"\n}",
+      "latency": 1.3305199146270752,
+      "prompt_tokens": 13787,
+      "completion_tokens": 25
+    }
+  ],
+  "metrics": {
+    "step_latency": [
+      1.626065969467163,
+      0.9862096309661865,
+      1.0624301433563232,
+      0.8440477848052979,
+      0.9612150192260742,
+      1.3305199146270752
+    ],
+    "cumulative_latency": [
+      1.626065969467163,
+      2.6122756004333496,
+      3.674705743789673,
+      4.518753528594971,
+      5.479968547821045,
+      6.81048846244812
+    ],
+    "prompt_tokens": [
+      1674,
+      4096,
+      6519,
+      8942,
+      11365,
+      13787
+    ],
+    "total_latency": 6.81048846244812
+  }
+}

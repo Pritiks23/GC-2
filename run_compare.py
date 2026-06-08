@@ -1,6 +1,8 @@
 from dotenv import load_dotenv
 load_dotenv()
 
+import os
+
 import json
 from agent.loop import run_agent
 from metrics.analysis import extract_metrics

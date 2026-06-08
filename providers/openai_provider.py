@@ -1,17 +1,23 @@
 import time
+import os
 from openai import OpenAI
-from config import OPENAI_API_KEY, MODEL
 from providers.base import LLMProvider
-
-client = OpenAI(api_key=OPENAI_API_KEY)
+from config import MODEL
 
 
 class OpenAIProvider(LLMProvider):
 
+    def __init__(self):
+        api_key = os.getenv("OPENAI_API_KEY")
+        if not api_key:
+            raise ValueError("OPENAI_API_KEY not set in environment")
+
+        self.client = OpenAI(api_key=api_key)
+
     def call(self, messages, max_tokens):
         start = time.time()
 
-        resp = client.chat.completions.create(
+        resp = self.client.chat.completions.create(
             model=MODEL,
             messages=messages,
             max_tokens=max_tokens
