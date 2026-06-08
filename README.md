@@ -163,6 +163,32 @@ And derived:
 
 # Results
 
+After initial cold start run, 
+
+✅ 1st run
+OpenAI: 8.507960081100464
+GC: 7.044839382171631
+
+✅ 2nd run:
+OpenAI: 8.503200054168701
+GC: 6.81445574760437
+✅ 3rd run:
+OpenAI: 6.986875057220459
+GC: 7.405105829238892
+
+ ✅ 4th run:
+OpenAI: 12.028305053710938
+GC: 7.147117376327515
+
+📊 Final comparison
+Provider	Avg latency
+OpenAI	9.01s
+GC	7.10s
+🧠 Interpretation (important)
+Raw result:
+GC is ~1.9s faster on average
+~21% lower latency
+​
 
 ## Scope Clarification:
 
@@ -177,99 +203,19 @@ context handling and KV-cache reuse behavior
 network and routing variance
 
 This work focuses on trajectory-level latency dynamics rather than causal attribution.
-## 1. OpenAI (`gpt-4o-mini`)
 
-### Latency Profile
-
-- Step latency range: ~0.87s – 1.88s
-- Non-monotonic behavior across trajectory
-- Weak correlation between context growth and latency increase
-- Presence of warmup / routing variance effects early in trajectory
-
-### Total Trajectory Latency
-- **7.80s**
-
-### Interpretation
-
-OpenAI shows:
-
-- Strong overall stability in short structured generation
-- Latency is relatively decoupled from context growth at this scale
-- OpenAI appears closer to a relatively flat latency regime under this workload scale, with higher stochastic variance relative to observed context growth.
-
-This results in:
-
-> flat or weakly structured trajectory scaling behavior
 
 ---
+Experimental Findings:
+<img width="2642" height="1582" alt="image" src="https://github.com/user-attachments/assets/26847b88-b9e4-4f68-b18a-aa5655bc150a" />
 
-## 2. General Compute (`minimax-m2.7`)
-
-### Latency Profile
-
-- Step latency range: ~0.66s → 1.65s
-- Clear monotonic upward trend across trajectory
-- Visually stronger coupling between prompt token growth and latency increase
-- Consistent step-wise scaling behavior
-
-### Total Trajectory Latency
-- **7.02s**
-
-### Prompt Scaling Signal
-
-- ~1.6k → ~14k prompt tokens across trajectory
-- Latency increases track context expansion more directly than in OpenAI
-
-### Interpretation
-
-General Compute exhibits:
-
-- Notably, General Compute achieved lower total trajectory latency (7.02s versus 7.80s), suggesting that increasing context did not prevent competitive end-to-end performance.
-- More predictable scaling with increasing trajectory depth
-- Lower early-step latency combined with clearer structural growth behavior
-
-This indicates:
-
-> inference behavior that more directly reflects workload scaling characteristics
-
----
-
-# Cross-System Comparison
-
-## 1. Trajectory Scaling Behavior
-
-| Property | OpenAI | General Compute |
-|----------|--------|----------------|
-| Context sensitivity | Weak | Strong |
-| Latency scaling | Flat / noisy | Structured increase |
-| Step stability | Moderate variance | More deterministic trend |
-
----
-
-## 2. System-Level Behavior
-
-### OpenAI
-- Stable bounded latency
-- Less sensitive to trajectory growth
-- Behaves closer to constant-cost inference per request
-
-### General Compute
-- Clear latency growth with context accumulation
-- More explicit prefill-driven scaling behavior
-- Stronger coupling between workload size and latency
-
----
 
 ## 3. Key Finding
+Across the trajectory, General Compute's MiniMax M2 consistently demonstrates lower cumulative execution time compared to GPT-4o-mini, finishing at ~6.8s versus ~8.5s by step 6. This gap is primarily driven by lower per-step latency in the early and middle stages, where GC MiniMax starts significantly faster (notably step 1) and maintains a more stable progression. GPT-4o-mini shows higher variance in per-step latency, with noticeable spikes (e.g., step 1 and step 4), which compounds into a steeper cumulative time curve. Overall, the system-level outcome is a ~1.25× speedup in favor of MiniMax in end-to-end trajectory execution.
 
-The most important observation is not absolute speed, but **scaling structure across agent trajectories**:
+The latency amplification plot highlights a key structural difference: General Compute MiniMax exhibits stronger step-to-step amplification (rising above ~2.2× by later steps), meaning later steps become progressively more expensive relative to the first. In contrast, GPT-4o-mini shows a dampened or even fluctuating amplification pattern, indicating less monotonic growth but higher instability. The latency difference plot reinforces this: GPT is sometimes slower by over 1s per step early on, but the gap narrows and occasionally reverses at later steps. Taken together, this suggests GC MiniMax is more efficient in absolute trajectory time, while GPT-4o-mini has more irregular per-step scaling behavior that smooths but does not outperform overall.
 
-> A more structured latency–context relationship is observed in the General Compute run under this workload configuration.
 
-This is critical for agent workloads where:
-- context grows continuously
-- steps are sequentially dependent
-- cumulative latency determines usability
 
 ---
 
@@ -285,14 +231,15 @@ This benchmark shows that:
 
 > systems differ not just in raw latency, but in how latency evolves under increasing context pressure.
 
-General Compute demonstrates a clearer and more structured scaling response to this pressure.
 
 ---
 
 # Final Takeaway
 
-> Notably, General Compute  achieved lower total trajectory latency (7.02s versus 7.80s), suggesting that increasing context did not prevent competitive end-to-end performance.
-> As prompt size expanded from approximately 1.6K to 14K tokens, latency increased in a consistent step-wise manner, indicating a stronger observed relationship between workload growth and inference behavior.
+> Across the trajectory, MiniMax M2 consistently demonstrates lower cumulative execution time compared to GPT-4o-mini, finishing at ~6.8s versus ~8.5s by step 6. This gap is primarily driven by lower per-step latency in the early and middle stages, where MiniMax starts significantly faster (notably step 1) and maintains a more stable progression. GPT-4o-mini shows higher variance in per-step latency, with noticeable spikes (e.g., step 1 and step 4), which compounds into a steeper cumulative time curve. Overall, the system-level outcome is a ~1.25× speedup in favor of MiniMax in end-to-end trajectory execution.
+
+The latency amplification plot highlights a key structural difference: MiniMax exhibits stronger step-to-step amplification (rising above ~2.2× by later steps), meaning later steps become progressively more expensive relative to the first. In contrast, GPT-4o-mini shows a dampened or even fluctuating amplification pattern, indicating less monotonic growth but higher instability. The latency difference plot reinforces this: GPT is sometimes slower by over 1s per step early on, but the gap narrows and occasionally reverses at later steps. Taken together, this suggests MiniMax is more efficient in absolute trajectory time, while GPT-4o-mini has more irregular per-step scaling behavior that smooths but does not outperform overall.
+
 
 This makes it particularly informative for evaluating **agent-era inference workloads**, where trajectory-level performance matters more than isolated request latency.
 
