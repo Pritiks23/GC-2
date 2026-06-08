@@ -101,7 +101,7 @@ This indicates that inference latency in agent systems cannot be fully understoo
 
 
 # Agent Trajectory Latency Benchmark : Cross-provider inference
-<img width="2140" height="1502" alt="image" src="https://github.com/user-attachments/assets/b032432a-cd46-4cce-92e5-004a66396d38" />
+<img width="2642" height="1582" alt="image" src="https://github.com/user-attachments/assets/26847b88-b9e4-4f68-b18a-aa5655bc150a" />
 
 ## Overview
 
